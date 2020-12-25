@@ -61,52 +61,28 @@ int main()
         hex[0] = received_unsigned_txn_string[j];
         hex[1] = received_unsigned_txn_string[j+1];
         unsigned_txn_bytearr[i] = (uint8_t)hextodec(hex);
-        //printf("%d %d \n", i, unsigned_txn_bytearr[i]);
+        printf("%d %d \n", i, unsigned_txn_bytearr[i]);
     }
     unsigned_txn *transaction = (unsigned_txn*)malloc(sizeof(unsigned_txn));
 
     //For network_version and input_count
     memcpy(transaction, unsigned_txn_bytearr, 5*sizeof(uint8_t));   
 
+    //For input structure
     uint8_t ipcnt = transaction->input_count[0];
     transaction->input = (unsigned_txn_input*)malloc( ipcnt * sizeof(unsigned_txn_input) ); //Memory allocation
-    int ip=0;
-
-    for (ip=0; ip<ipcnt; ip++)
-        memcpy(transaction->input, &unsigned_txn_bytearr[5 + ip*66], 66);
+    memcpy(transaction->input, &unsigned_txn_bytearr[5], 66*ipcnt);
 
     //For output_count
-    memcpy(transaction->output_count, &unsigned_txn_bytearr[67+ (ip-1)*66 + 4], 1);
+    memcpy(transaction->output_count, &unsigned_txn_bytearr[5 + 66*ipcnt], 1);
 
+    //For output structure
     uint8_t opcnt = transaction->output_count[0];   
     transaction->output = (txn_output*)malloc( opcnt * sizeof(txn_output) );    //Memory allocation
-    int op=0;
-
-    //For output transaction
-    for (op=0; op<opcnt; op++)
-        memcpy(transaction->input, &unsigned_txn_bytearr[72 + (ip-1)*66 + op*34], 34);
+    memcpy(transaction->output, &unsigned_txn_bytearr[5 + 66*ipcnt + 1], 34*(opcnt) ); 
 
     //For locktime and sighash
-    memcpy(transaction->locktime,&unsigned_txn_bytearr[106 + (ip-1)*66 + (op-1)*34], 4);
-    memcpy(transaction->sighash,&unsigned_txn_bytearr[110 + (ip-1)*66 + (op-1)*34], 4);
-
-
-    // for(int i=0; i<4; i++)
-    //     printf("%d ",transaction->locktime[i]);
+    memcpy(transaction->locktime,&unsigned_txn_bytearr[5 + 66*ipcnt + 1 + 34*opcnt], 4);
+    memcpy(transaction->sighash,&unsigned_txn_bytearr[5 + 66*ipcnt + 1 + 34*opcnt + 4], 4);
 
 }   //main ends here
-
-
-    // memcpy(transaction->network_version, unsigned_txn_bytearr, 4);
-    // memcpy(transaction->input_count, &unsigned_txn_bytearr[4], 1);
-    // memcpy(transaction->input->previous_txn_hash, &unsigned_txn_bytearr[5], 32);
-    // memcpy(transaction->input->previous_output_index, &unsigned_txn_bytearr[37], 4);
-    // memcpy(transaction->input->script_length, &unsigned_txn_bytearr[41], 1);
-    // memcpy(transaction->input->script_public_key, &unsigned_txn_bytearr[42], 25);
-    // memcpy(transaction->input->sequence, &unsigned_txn_bytearr[67], 4);
-    // memcpy(transaction->output_count, &unsigned_txn_bytearr[71], 1);
-    // memcpy(transaction->output->value, &unsigned_txn_bytearr[72], 8);
-    // memcpy(transaction->output->script_length, &unsigned_txn_bytearr[80], 1);
-    // memcpy(transaction->output->script_public_key,&unsigned_txn_bytearr[81], 25);
-    // memcpy(transaction->locktime,&unsigned_txn_bytearr[106], 4);
-    // memcpy(transaction->sighash,&unsigned_txn_bytearr[110], 4);
