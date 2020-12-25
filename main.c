@@ -61,7 +61,7 @@ int main()
         hex[0] = received_unsigned_txn_string[j];
         hex[1] = received_unsigned_txn_string[j+1];
         unsigned_txn_bytearr[i] = (uint8_t)hextodec(hex);
-        printf("%d %d \n", i, unsigned_txn_bytearr[i]);
+        //printf("%d %d \n", i, unsigned_txn_bytearr[i]);
     }
     unsigned_txn *transaction = (unsigned_txn*)malloc(sizeof(unsigned_txn));
 
